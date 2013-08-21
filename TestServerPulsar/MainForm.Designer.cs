@@ -45,6 +45,8 @@ namespace TestServerPulsar
             this.uiIpAddressTextBox = new System.Windows.Forms.TextBox();
             this.uiStartServerButton = new System.Windows.Forms.Button();
             this.uiSendSetTimeToPulsarButton = new System.Windows.Forms.Button();
+            this.uiCommandTextBox = new System.Windows.Forms.TextBox();
+            this.uiSendCustomCommandToPulsarButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // uiMessageTextBox
@@ -113,11 +115,32 @@ namespace TestServerPulsar
             this.uiSendSetTimeToPulsarButton.UseVisualStyleBackColor = true;
             this.uiSendSetTimeToPulsarButton.Click += new System.EventHandler(this.uiSendSetTimeToPulsarButton_Click);
             // 
+            // uiCommandTextBox
+            // 
+            this.uiCommandTextBox.Location = new System.Drawing.Point(164, 40);
+            this.uiCommandTextBox.Multiline = true;
+            this.uiCommandTextBox.Name = "uiCommandTextBox";
+            this.uiCommandTextBox.Size = new System.Drawing.Size(453, 19);
+            this.uiCommandTextBox.TabIndex = 11;
+            this.uiCommandTextBox.Text = "192 168 1 102 05 24 25 24 85 96 74 86 90";
+            // 
+            // uiSendCustomCommandToPulsarButton
+            // 
+            this.uiSendCustomCommandToPulsarButton.Location = new System.Drawing.Point(58, 38);
+            this.uiSendCustomCommandToPulsarButton.Name = "uiSendCustomCommandToPulsarButton";
+            this.uiSendCustomCommandToPulsarButton.Size = new System.Drawing.Size(100, 23);
+            this.uiSendCustomCommandToPulsarButton.TabIndex = 10;
+            this.uiSendCustomCommandToPulsarButton.Text = "send test get time";
+            this.uiSendCustomCommandToPulsarButton.UseVisualStyleBackColor = true;
+            this.uiSendCustomCommandToPulsarButton.Click += new System.EventHandler(this.uiSendCustomCommandToPulsarButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(629, 365);
+            this.Controls.Add(this.uiCommandTextBox);
+            this.Controls.Add(this.uiSendCustomCommandToPulsarButton);
             this.Controls.Add(this.uiSendSetTimeToPulsarButton);
             this.Controls.Add(this.uiStartServerButton);
             this.Controls.Add(this.uiIpAddressTextBox);
@@ -139,5 +162,7 @@ namespace TestServerPulsar
 		private System.Windows.Forms.Label uiServerLabel;
         private System.Windows.Forms.TextBox uiMessageTextBox;
         private System.Windows.Forms.Button uiSendSetTimeToPulsarButton;
+        private System.Windows.Forms.TextBox uiCommandTextBox;
+        private System.Windows.Forms.Button uiSendCustomCommandToPulsarButton;
 	}
 }

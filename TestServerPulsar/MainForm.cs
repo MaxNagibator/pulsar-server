@@ -121,7 +121,6 @@ namespace TestServerPulsar
 
         private void SendQuerySetTime()
         {
-
             const byte commandSetTimeCode = 0x05;
             const byte commandSetTimeLength = 0x10;
             byte[] bodyByte = GetDateBytes();
@@ -139,6 +138,43 @@ namespace TestServerPulsar
             var second = BitConverter.GetBytes(DateTime.Now.Second);
             byte[] dateBytes = {year[0], month[0], day[0], hour[0], minute[0], second[0]};
             return dateBytes;
+        }
+
+        private void uiSendCustomCommandToPulsarButton_Click(object sender, EventArgs e)
+        {
+            SendCustomCommand();
+        }
+
+        private void SendCustomCommand()
+        {
+            if (_connection)
+            {
+                try
+                {
+                    byte[] customBytes = GetCustomBytes();
+                    AddMessage("отправлено сообщение: " + BitConverter.ToString(customBytes));
+                    _client.Send(customBytes, customBytes.Length, 0);
+                }
+                catch (Exception)
+                {
+                    AddMessage("ошибка преобразования команды");
+                }
+            }
+            else
+            {
+                AddMessage("для отправки нужно устанвоить соединение");
+            }
+        }
+
+        private byte[] GetCustomBytes()
+        {
+            var parts = uiCommandTextBox.Text.Split(' ');
+            var newArray = new byte[parts.Length];
+            for (int i = 0; i < newArray.Length; i++)
+            {
+                newArray[i] = BitConverter.GetBytes(Convert.ToInt16(parts[i]))[0];
+            }
+            return newArray;
         }
 
         private void SendQuery(byte commandGetTimeCode, byte commandGetTimeLength, byte[] bodyByte)
@@ -180,27 +216,6 @@ namespace TestServerPulsar
             _client.Send(bytes, bytes.Length, 0);
         }
 
-        private byte[] GetRandomIdByte()
-        {
-            var r = new Random();
-            var i1 = BitConverter.GetBytes(r.Next(0, 255));
-            var i2 = BitConverter.GetBytes(r.Next(0, 255));
-            byte[] idBytes = { i1[0], i2[0] };
-            return idBytes;
-        }
-
-        private byte[] GetBytesWithCrcBytes(byte[] bytes)
-        {
-            var crc16Uint = crc16converter.GetCrc16(bytes);
-            var crc16Bytes = BitConverter.GetBytes(crc16Uint);
-
-            var newArray = new byte[bytes.Length + 2];
-            bytes.CopyTo(newArray, 0);
-            newArray[bytes.Length + 0] = crc16Bytes[0];
-            newArray[bytes.Length + 1] = crc16Bytes[1];
-            return newArray;
-        }
-
         private byte[] GetFirstSixBytes(byte[] ipAddressBytes, byte commandCode, byte commandLength)
         {
             byte[] newArray = {
@@ -222,12 +237,33 @@ namespace TestServerPulsar
             return newArray;
         }
 
+        private byte[] GetRandomIdByte()
+        {
+            var r = new Random();
+            var i1 = BitConverter.GetBytes(r.Next(0, 255));
+            var i2 = BitConverter.GetBytes(r.Next(0, 255));
+            byte[] idBytes = { i1[0], i2[0] };
+            return idBytes;
+        }
+
         private byte[] GetBytesWithIdBytes(byte[] commandIdByte, byte[] bytes)
         {
             var newArray = new byte[bytes.Length + 2];
             bytes.CopyTo(newArray, 0);
             newArray[bytes.Length + 0] = commandIdByte[0];
             newArray[bytes.Length + 1] = commandIdByte[1];
+            return newArray;
+        }
+
+        private byte[] GetBytesWithCrcBytes(byte[] bytes)
+        {
+            var crc16Uint = crc16converter.GetCrc16(bytes);
+            var crc16Bytes = BitConverter.GetBytes(crc16Uint);
+
+            var newArray = new byte[bytes.Length + 2];
+            bytes.CopyTo(newArray, 0);
+            newArray[bytes.Length + 0] = crc16Bytes[0];
+            newArray[bytes.Length + 1] = crc16Bytes[1];
             return newArray;
         }
 
