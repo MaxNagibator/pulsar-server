@@ -41,10 +41,10 @@ namespace TestServerPulsar
             this.uiMessageTextBox = new System.Windows.Forms.TextBox();
             this.uiServerLabel = new System.Windows.Forms.Label();
             this.uiMainNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.uiSendToPulsarButton = new System.Windows.Forms.Button();
+            this.uiSendGetTimeToPulsarButton = new System.Windows.Forms.Button();
             this.uiIpAddressTextBox = new System.Windows.Forms.TextBox();
             this.uiStartServerButton = new System.Windows.Forms.Button();
-            this.uiSendToPulsarButton2 = new System.Windows.Forms.Button();
+            this.uiSendSetTimeToPulsarButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // uiMessageTextBox
@@ -74,15 +74,15 @@ namespace TestServerPulsar
             this.uiMainNotifyIcon.Visible = true;
             this.uiMainNotifyIcon.DoubleClick += new System.EventHandler(this.UiMainNotifyIcon_DoubleClick);
             // 
-            // uiSendToPulsarButton
+            // uiSendGetTimeToPulsarButton
             // 
-            this.uiSendToPulsarButton.Location = new System.Drawing.Point(234, 10);
-            this.uiSendToPulsarButton.Name = "uiSendToPulsarButton";
-            this.uiSendToPulsarButton.Size = new System.Drawing.Size(100, 23);
-            this.uiSendToPulsarButton.TabIndex = 6;
-            this.uiSendToPulsarButton.Text = "send test query";
-            this.uiSendToPulsarButton.UseVisualStyleBackColor = true;
-            this.uiSendToPulsarButton.Click += new System.EventHandler(this.UiSendToPulsarButton_Click);
+            this.uiSendGetTimeToPulsarButton.Location = new System.Drawing.Point(234, 10);
+            this.uiSendGetTimeToPulsarButton.Name = "uiSendGetTimeToPulsarButton";
+            this.uiSendGetTimeToPulsarButton.Size = new System.Drawing.Size(100, 23);
+            this.uiSendGetTimeToPulsarButton.TabIndex = 6;
+            this.uiSendGetTimeToPulsarButton.Text = "send test get time";
+            this.uiSendGetTimeToPulsarButton.UseVisualStyleBackColor = true;
+            this.uiSendGetTimeToPulsarButton.Click += new System.EventHandler(this.UiSendToPulsarButton_Click);
             // 
             // uiIpAddressTextBox
             // 
@@ -103,25 +103,25 @@ namespace TestServerPulsar
             this.uiStartServerButton.UseVisualStyleBackColor = true;
             this.uiStartServerButton.Click += new System.EventHandler(this.UiStartServerButton_Click);
             // 
-            // uiSendToPulsarButton2
+            // uiSendSetTimeToPulsarButton
             // 
-            this.uiSendToPulsarButton2.Location = new System.Drawing.Point(340, 10);
-            this.uiSendToPulsarButton2.Name = "uiSendToPulsarButton2";
-            this.uiSendToPulsarButton2.Size = new System.Drawing.Size(100, 23);
-            this.uiSendToPulsarButton2.TabIndex = 9;
-            this.uiSendToPulsarButton2.Text = "send test query";
-            this.uiSendToPulsarButton2.UseVisualStyleBackColor = true;
-            this.uiSendToPulsarButton2.Click += new System.EventHandler(this.uiSendToPulsarButton2_Click);
+            this.uiSendSetTimeToPulsarButton.Location = new System.Drawing.Point(340, 10);
+            this.uiSendSetTimeToPulsarButton.Name = "uiSendSetTimeToPulsarButton";
+            this.uiSendSetTimeToPulsarButton.Size = new System.Drawing.Size(100, 23);
+            this.uiSendSetTimeToPulsarButton.TabIndex = 9;
+            this.uiSendSetTimeToPulsarButton.Text = "send test set time";
+            this.uiSendSetTimeToPulsarButton.UseVisualStyleBackColor = true;
+            this.uiSendSetTimeToPulsarButton.Click += new System.EventHandler(this.uiSendSetTimeToPulsarButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(629, 365);
-            this.Controls.Add(this.uiSendToPulsarButton2);
+            this.Controls.Add(this.uiSendSetTimeToPulsarButton);
             this.Controls.Add(this.uiStartServerButton);
             this.Controls.Add(this.uiIpAddressTextBox);
-            this.Controls.Add(this.uiSendToPulsarButton);
+            this.Controls.Add(this.uiSendGetTimeToPulsarButton);
             this.Controls.Add(this.uiServerLabel);
             this.Controls.Add(this.uiMessageTextBox);
             this.Name = "MainForm";
@@ -134,10 +134,10 @@ namespace TestServerPulsar
 		}
 		private System.Windows.Forms.Button uiStartServerButton;
 		private System.Windows.Forms.TextBox uiIpAddressTextBox;
-		private System.Windows.Forms.Button uiSendToPulsarButton;
+		private System.Windows.Forms.Button uiSendGetTimeToPulsarButton;
 		private System.Windows.Forms.NotifyIcon uiMainNotifyIcon;
 		private System.Windows.Forms.Label uiServerLabel;
         private System.Windows.Forms.TextBox uiMessageTextBox;
-        private System.Windows.Forms.Button uiSendToPulsarButton2;
+        private System.Windows.Forms.Button uiSendSetTimeToPulsarButton;
 	}
 }

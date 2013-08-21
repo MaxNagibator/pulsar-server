@@ -109,24 +109,23 @@ namespace TestServerPulsar
 
         private void SendQueryGetTime()
         {
-            byte[] commandIdByte = { 0x21, 0x22 };
             const byte commandGetTimeCode = 0x04;
             const byte commandGetTimeLength = 0x0A;
-            SendQuery(commandGetTimeCode, commandGetTimeLength, commandIdByte, null);
+            SendQuery(commandGetTimeCode, commandGetTimeLength, null);
         }
 
-        private void uiSendToPulsarButton2_Click(object sender, EventArgs e)
+        private void uiSendSetTimeToPulsarButton_Click(object sender, EventArgs e)
         {
             SendQuerySetTime();
         }
 
         private void SendQuerySetTime()
         {
-            byte[] commandIdByte = { 0x33, 0x34 };
+
             const byte commandSetTimeCode = 0x05;
             const byte commandSetTimeLength = 0x10;
             byte[] bodyByte = GetDateBytes();
-            SendQuery(commandSetTimeCode, commandSetTimeLength, commandIdByte, bodyByte);
+            SendQuery(commandSetTimeCode, commandSetTimeLength, bodyByte);
         }
 
         private byte[] GetDateBytes()
@@ -142,18 +141,12 @@ namespace TestServerPulsar
             return dateBytes;
         }
 
-        private void SendQuery(byte commandGetTimeCode, byte commandGetTimeLength, byte[] commandIdByte, byte[] bodyByte)
+        private void SendQuery(byte commandGetTimeCode, byte commandGetTimeLength, byte[] bodyByte)
         {
             if (_connection)
             {
-                var ip = _client.RemoteEndPoint;
-                var b = (ip.ToString().Split(':')[0]).Split('.');
-                var i1 = BitConverter.GetBytes(Convert.ToInt16(b[0]));
-                var i2 = BitConverter.GetBytes(Convert.ToInt16(b[1]));
-                var i3 = BitConverter.GetBytes(Convert.ToInt16(b[2]));
-                var i4 = BitConverter.GetBytes(Convert.ToInt16(b[3]));
-                byte[] ipAddressBytes = {i1[0], i2[0], i3[0], i4[0]};
-                SendToPulsar(commandGetTimeCode, commandGetTimeLength, ipAddressBytes, commandIdByte, bodyByte);
+                byte[] addressBytes = GetAddressBytes();
+                SendToPulsar(commandGetTimeCode, commandGetTimeLength, addressBytes, bodyByte);
             }
             else
             {
@@ -161,41 +154,81 @@ namespace TestServerPulsar
             }
         }
 
-        private void SendToPulsar(byte commandCode, byte commandLength, byte[] ipAddressBytes, byte[] commandIdByte, byte[] bodyBytes)
-        {              
-            byte[] bytesForCrc =
-                {
+        private byte[] GetAddressBytes()
+        {
+            var ip = _client.RemoteEndPoint;
+            var b = (ip.ToString().Split(':')[0]).Split('.');
+            var i1 = BitConverter.GetBytes(Convert.ToInt16(b[0]));
+            var i2 = BitConverter.GetBytes(Convert.ToInt16(b[1]));
+            var i3 = BitConverter.GetBytes(Convert.ToInt16(b[2]));
+            var i4 = BitConverter.GetBytes(Convert.ToInt16(b[3]));
+            byte[] ipAddressBytes = {i1[0], i2[0], i3[0], i4[0]};
+            return ipAddressBytes;
+        }
+
+        private void SendToPulsar(byte commandCode, byte commandLength, byte[] addressBytes, byte[] bodyBytes)
+        {
+            byte[] bytes = GetFirstSixBytes(addressBytes, commandCode, commandLength);
+            if(bodyBytes != null)
+            {
+                bytes = GetBytesWithBodyBytes(bodyBytes, bytes);
+            }
+            byte[] commandIdByte = GetRandomIdByte();
+            bytes = GetBytesWithIdBytes(commandIdByte, bytes);
+            bytes = GetBytesWithCrcBytes(bytes);
+            AddMessage("отправлено сообщение: " + BitConverter.ToString(bytes));
+            _client.Send(bytes, bytes.Length, 0);
+        }
+
+        private byte[] GetRandomIdByte()
+        {
+            var r = new Random();
+            var i1 = BitConverter.GetBytes(r.Next(0, 255));
+            var i2 = BitConverter.GetBytes(r.Next(0, 255));
+            byte[] idBytes = { i1[0], i2[0] };
+            return idBytes;
+        }
+
+        private byte[] GetBytesWithCrcBytes(byte[] bytes)
+        {
+            var crc16Uint = crc16converter.GetCrc16(bytes);
+            var crc16Bytes = BitConverter.GetBytes(crc16Uint);
+
+            var newArray = new byte[bytes.Length + 2];
+            bytes.CopyTo(newArray, 0);
+            newArray[bytes.Length + 0] = crc16Bytes[0];
+            newArray[bytes.Length + 1] = crc16Bytes[1];
+            return newArray;
+        }
+
+        private byte[] GetFirstSixBytes(byte[] ipAddressBytes, byte commandCode, byte commandLength)
+        {
+            byte[] newArray = {
                     ipAddressBytes[0], ipAddressBytes[1], ipAddressBytes[2], ipAddressBytes[3],
                     commandCode,
                     commandLength
                 };
+            return newArray;
+        }
 
-            if(bodyBytes != null)
+        private byte[] GetBytesWithBodyBytes(byte[] bodyBytes, byte[] firstSixBytes)
+        {
+            var newArray = new byte[firstSixBytes.Length + bodyBytes.Length];
+            firstSixBytes.CopyTo(newArray, 0);
+            for (int i = 0; i < bodyBytes.Length; i++)
             {
-                byte[] newArray = new byte[bytesForCrc.Length + bodyBytes.Length];
-                bytesForCrc.CopyTo(newArray, 0);
-                for (int i = 0; i < bodyBytes.Length; i++)
-                {
-                    newArray[bytesForCrc.Length + i] = bodyBytes[i];
-                }
-                bytesForCrc = newArray;
+                newArray[firstSixBytes.Length + i] = bodyBytes[i];
             }
+            return newArray;
+        }
 
-             byte[] newArray2 = new byte[bytesForCrc.Length + 2];
-             bytesForCrc.CopyTo(newArray2, 0);
-            newArray2[bytesForCrc.Length + 0] = commandIdByte[0];
-            newArray2[bytesForCrc.Length + 1] = commandIdByte[1];
-            bytesForCrc = newArray2;
-            var crc16Uint = crc16converter.GetCrc16(bytesForCrc);
-            var crc16Bytes = BitConverter.GetBytes(crc16Uint);
-
-            byte[] allBytes = new byte[bytesForCrc.Length + 2];
-            bytesForCrc.CopyTo(allBytes, 0);
-            allBytes[bytesForCrc.Length + 0] = crc16Bytes[0];
-            allBytes[bytesForCrc.Length + 1] = crc16Bytes[1];
-            AddMessage("отправлено сообщение: " + BitConverter.ToString(allBytes));
-            
-            _client.Send(allBytes, allBytes.Length, 0);
+        private byte[] GetBytesWithIdBytes(byte[] commandIdByte, byte[] bytes)
+        {
+            var newArray = new byte[bytes.Length + 2];
+            bytes.CopyTo(newArray, 0);
+            newArray[bytes.Length + 0] = commandIdByte[0];
+            newArray[bytes.Length + 1] = commandIdByte[1];
+            return newArray;
         }
 
         private void AddMessage(string txt)
